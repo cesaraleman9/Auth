@@ -43,14 +43,17 @@ AuthController.loginUser = async (req, res) => {
     });
 };
 
-AuthController.signIn = ({ body: { username, password } }, res) =>
-    model.findOne({ username }, {_v: 0, createdAt:0, updateAt: 0 })
-    .then((user) => user ? user : null)
-    .then((user) => user.validatePassword(password) ? jwtSignIn(user) : null)
-    .then((token) => res.json({
-        token: token,
-        type: 'Bearer'
-    }))
-    .catch((err) => res.status(401).json(err));
+AuthController.signIn = ({ body: { username, password } }, res) =>{
+    model.findOne({ 'username': username })
+    .then((user) => {
+        return user.validatePassword(password) ? jwtSignIn(user) : null
+    }).then((token) => {
+        res.json({
+            token: token,
+            type: 'Bearer'
+        })
+    }).catch((err) => res.status(401).json(err.message));
+}
+
 
 module.exports = AuthController;
